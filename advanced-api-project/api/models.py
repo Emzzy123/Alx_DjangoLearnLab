@@ -2,6 +2,7 @@
 # Each author can have multiple books, but each book is linked to one author.
 
 from django.db import models
+
 # Author model
 class Author(models.Model):
     name = models.CharField(max_length=100)
