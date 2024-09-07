@@ -1,28 +1,27 @@
 from rest_framework import generics
-from rest_framework import filters
-from .models import Book
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from .models import Book
 from .serializers import BookSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
-from rest_framework.filters import SearchFilter
-from rest_framework.filters import OrderingFilter 
-from django_filters import rest_framework 
 
 # ListView - Retrieve all books
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    
+    # Filter, search, and ordering fields
     # filterset_fields = ['title', 'author', 'publication_year']
-    filterset_fields = None
-    search_fields = ["filters.SearchFilter"]
-    ordering_fields = ["filters.OrderingFilter"]  
+    filterset_fields = ['publication_year']
+    search_fields = ['title']
+    ordering_fields = ['publication_year']
     ordering = ['title']
 
     # Only render JSON to avoid template error in browsable API
-    # renderer_classes = [JSONRenderer]
+    # renderer_classes = [JSONRenderer]  # Optional, uncomment if needed
 
 # DetailView - Retrieve a single book by ID
 class BookDetailView(generics.RetrieveAPIView):

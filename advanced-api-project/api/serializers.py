@@ -1,7 +1,7 @@
 # AuthorSerializer uses a nested BookSerializer to serialize related books dynamically.
 # This makes it easier to handle the relationship between authors and their books.
 
-from datetime import timezone
+from django.utils import timezone
 from rest_framework import serializers
 from .models import Book, Author
 
