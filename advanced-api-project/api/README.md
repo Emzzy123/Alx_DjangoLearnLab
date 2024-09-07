@@ -14,3 +14,19 @@ For creating, updating, and deleting books, you must be an authenticated user. Y
 
 ## Testing
 You can test these endpoints using Postman or curl by sending requests to the server.
+
+## API Query Features
+
+### Filtering:
+- Filter books by `title`, `author`, or `publication_year` using query parameters:
+  - `/books/?title=some_title`
+  - `/books/?author=1`
+  - `/books/?publication_year=2020`
+
+### Searching:
+- Search books by `title` or `author` using the `?search=` parameter:
+  - `/books/?search=Harry`
+
+### Ordering:
+- Order books by `title` or `publication_year` using the `?ordering=` parameter:
+  - `/books/?ordering=publication_year`
