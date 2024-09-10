@@ -78,6 +78,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'USER': '',  # SQLite does not require USER, but you can leave this blank
+        'PORT': '',  # SQLite does not use PORT, leave this blank as well
     }
 }
 
