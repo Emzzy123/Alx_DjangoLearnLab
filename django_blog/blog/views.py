@@ -10,6 +10,7 @@ from .models import Post, Comment
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import CommentForm, PostForm
 from django.db.models import Q
+from taggit.models import Tag
 
 # User registration and profile update views
 class UserRegisterForm(UserCreationForm):
@@ -95,6 +96,20 @@ class PostSearchView(ListView):
             ).distinct()
         return Post.objects.none()
 
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
+        return Post.objects.filter(tags__in=[tag])  # Filter posts that have the specific tag
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
+        return context
+    
 # Comment views
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment

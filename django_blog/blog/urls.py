@@ -7,6 +7,7 @@ from .views import (
     PostCreateView,
     PostUpdateView,
     PostDeleteView,
+    PostByTagListView,
     PostSearchView,
     CommentCreateView,
     CommentUpdateView,
@@ -26,6 +27,9 @@ urlpatterns = [
     path('post/new/', PostCreateView.as_view(), name='post-create'),
     path('post/<int:pk>/edit/', PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
+    
+    # Tag filtering route
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),  # View to filter posts by tag
     
     # Search
     path('search/', PostSearchView.as_view(), name='post-search'),
