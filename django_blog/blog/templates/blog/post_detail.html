@@ -1,13 +1,44 @@
 {% extends 'blog/base.html' %}
-{% block content %}
-<h2>{{ object.title }}</h2>
-<p>{{ object.content }}</p>
-<p><strong>Author:</strong> {{ object.author }}</p>
-<p><strong>Published:</strong> {{ object.published_date }}</p>
 
-<!-- Edit and Delete buttons, only for the post author -->
-{% if user == object.author %}
-    <a href="{% url 'post-update' object.id %}">Edit</a>
-    <a href="{% url 'post-delete' object.id %}">Delete</a>
-{% endif %}
+{% block content %}
+    <!-- Post Details -->
+    <h2>{{ object.title }}</h2>
+    <p>{{ object.content }}</p>
+    <p><strong>Author:</strong> {{ object.author }}</p>
+    <p><strong>Published:</strong> {{ object.published_date }}</p>
+
+    <!-- Edit and Delete buttons, only for the post author -->
+    {% if user == object.author %}
+        <a href="{% url 'post-update' object.id %}">Edit</a>
+        <a href="{% url 'post-delete' object.id %}">Delete</a>
+    {% endif %}
+
+    <!-- Comments Section -->
+    <h3>Comments</h3>
+    <ul>
+        {% for comment in object.comments.all %}
+            <li>
+                <strong>{{ comment.author }}</strong> said: {{ comment.content }}
+                <br><small>{{ comment.created_at }}</small>
+                <!-- Allow the comment author to delete their comment -->
+                {% if comment.author == user %}
+                    <a href="{% url 'delete-comment' comment.id %}">Delete</a>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No comments yet. Be the first to comment!</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Comment Form -->
+    <h3>Leave a Comment</h3>
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'add-comment' object.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit Comment</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to leave a comment.</p>
+    {% endif %}
 {% endblock %}

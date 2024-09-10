@@ -54,6 +54,10 @@ ROOT_URLCONF = 'django_blog.urls'
 
 LOGIN_URL = 'login'
 
+LOGIN_REDIRECT_URL = 'post-list'
+
+LOGOUT_REDIRECT_URL = 'login'
+
 APPEND_SLASH = True
 
 TEMPLATES = [
