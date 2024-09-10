@@ -8,8 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import Post, Comment
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import CommentForm
-from taggit.forms import TagWidget 
+from .forms import CommentForm, PostForm
 from django.db.models import Q
 
 # User registration and profile update views
@@ -51,14 +50,6 @@ class PostListView(LoginRequiredMixin, ListView):
 class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
-
-class PostForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = ['title', 'content', 'tags']  # Include tags in the form
-        widgets = {
-            'tags': TagWidget(),  # Use TagWidget for better tag management
-        }
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
