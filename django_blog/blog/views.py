@@ -88,7 +88,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     template_name = 'blog/add_comment.html'
 
     def form_valid(self, form):
-        post = get_object_or_404(Post, id=self.kwargs['pk'])  # Use pk from the URL
+        post = get_object_or_404(Post, id=self.kwargs['pk'])  
         form.instance.author = self.request.user
         form.instance.post = post
         return super().form_valid(form)
