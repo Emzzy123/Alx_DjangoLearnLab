@@ -122,6 +122,11 @@
         <nav>
             <ul>
                 {% if user.is_authenticated %}
+                <form method="GET" action="{% url 'post-search' %}">
+                    <input type="text" name="q" placeholder="Search posts...">
+                    <button type="submit">Search</button>
+                </form>
+                
                     <li><a href="{% url 'post-list' %}">Home</a></li>
                     <li>
                         <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: inline;">

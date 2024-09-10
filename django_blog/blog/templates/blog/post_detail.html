@@ -7,6 +7,13 @@
     <p><strong>Author:</strong> {{ object.author }}</p>
     <p><strong>Published:</strong> {{ object.published_date }}</p>
 
+    <!-- Display Tags -->
+    <p><strong>Tags:</strong>
+        {% for tag in object.tags.all %}
+            <a href="{% url 'post-search' %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+
     <!-- Edit and Delete buttons, only for the post author -->
     {% if user == object.author %}
         <a href="{% url 'post-update' object.id %}">Edit</a>

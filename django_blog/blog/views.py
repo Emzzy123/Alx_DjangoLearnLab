@@ -9,6 +9,8 @@ from django.urls import reverse_lazy
 from .models import Post, Comment
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import CommentForm
+from taggit.forms import TagWidget 
+from django.db.models import Q
 
 # User registration and profile update views
 class UserRegisterForm(UserCreationForm):
@@ -50,9 +52,17 @@ class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
 
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'tags']  # Include tags in the form
+        widgets = {
+            'tags': TagWidget(),  # Use TagWidget for better tag management
+        }
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm 
     template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
@@ -61,7 +71,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm 	
     template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
@@ -80,6 +90,19 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+class PostSearchView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
+            ).distinct()
+        return Post.objects.none()
 
 # Comment views
 class CommentCreateView(LoginRequiredMixin, CreateView):
