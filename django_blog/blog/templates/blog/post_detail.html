@@ -20,8 +20,9 @@
             <li>
                 <strong>{{ comment.author }}</strong> said: {{ comment.content }}
                 <br><small>{{ comment.created_at }}</small>
-                <!-- Allow the comment author to delete their comment -->
+                <!-- Allow the comment author to edit and delete their comment -->
                 {% if comment.author == user %}
+                    <a href="{% url 'edit-comment' comment.id %}">Edit</a>
                     <a href="{% url 'delete-comment' comment.id %}">Delete</a>
                 {% endif %}
             </li>
