@@ -114,3 +114,41 @@ footer {
 .register-link a:hover {
     color: #2980b9;
 }
+
+/* Blog Post List */
+.blog-post-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.blog-post-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.blog-post-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.blog-post-item a {
+    font-size: 18px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.blog-post-item a:hover {
+    color: #2980b9;
+}
+
+.blog-post-item small {
+    display: block;
+    margin-top: 10px;
+    color: #777;
+    font-size: 14px;
+}

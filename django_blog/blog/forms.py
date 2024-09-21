@@ -3,7 +3,6 @@ from .models import Comment
 from taggit.forms import TagWidget 
 from .models import Post
 
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
