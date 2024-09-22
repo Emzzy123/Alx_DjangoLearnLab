@@ -1,52 +1,51 @@
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status, generics, permissions
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from .models import CustomUser
-from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer, RegisterSerializer
+from .models import CustomUser, Post
+from .serializers import RegisterSerializer, UserSerializer, PostSerializer
+from rest_framework.authtoken.models import Token  # Ensure Token import is correct
 
-# List all users (as an example of CustomUser.objects.all())
-class UserListView(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]  # Ensuring this permission is included
-
-# Follow user
-class FollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]  # Make sure this is applied
-
-    def post(self, request, user_id):
-        try:
-            user_to_follow = CustomUser.objects.get(id=user_id)
-            request.user.following.add(user_to_follow)
-            return Response({'message': f'You are now following {user_to_follow.username}'}, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-# Unfollow user
-class UnfollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]  # Make sure this is applied
-
-    def post(self, request, user_id):
-        try:
-            user_to_unfollow = CustomUser.objects.get(id=user_id)
-            request.user.following.remove(user_to_unfollow)
-            return Response({'message': f'You have unfollowed {user_to_unfollow.username}'}, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-# Register user (using generics.GenericAPIView)
 class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token = Token.objects.create(user=user)
-            return Response({
-                'token': token.key,
-                'user': UserSerializer(user).data
-            }, status=status.HTTP_201_CREATED)
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserProfileView(generics.GenericAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+class UserListView(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class PostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
+
+class PostCreateView(generics.CreateAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
