@@ -21,3 +21,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Create token for the new user
         Token.objects.create(user=user)
         return user
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
