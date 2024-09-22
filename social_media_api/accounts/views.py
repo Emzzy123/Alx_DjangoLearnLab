@@ -5,6 +5,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer
+from rest_framework.permissions import IsAuthenticated
+from .models import CustomUser
+
 
 class RegisterView(APIView):
     def post(self, request):
@@ -20,3 +23,25 @@ class UserProfileView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        try:
+            user_to_follow = CustomUser.objects.get(id=user_id)
+            request.user.following.add(user_to_follow)
+            return Response({'message': f'You are now following {user_to_follow.username}'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        try:
+            user_to_unfollow = CustomUser.objects.get(id=user_id)
+            request.user.following.remove(user_to_unfollow)
+            return Response({'message': f'You have unfollowed {user_to_unfollow.username}'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
