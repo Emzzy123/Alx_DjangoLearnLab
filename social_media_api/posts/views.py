@@ -1,14 +1,14 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status, generics
 from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .serializers import PostSerializer, CommentSerializer, UserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.renderers import JSONRenderer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Post
-from rest_framework import status
+from .models import Post, CustomUser
+
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -38,3 +38,11 @@ class UserFeedView(APIView):
         feed_posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')
         data = [{'title': post.title, 'content': post.content, 'author': post.author.username, 'created_at': post.created_at} for post in feed_posts]
         return Response(data, status=status.HTTP_200_OK)
+
+class UserProfileView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user

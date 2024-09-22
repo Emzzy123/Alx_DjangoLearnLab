@@ -10,11 +10,11 @@ from .serializers import UserSerializer, RegisterSerializer
 class UserListView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Ensuring this permission is included
 
 # Follow user
 class FollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Make sure this is applied
 
     def post(self, request, user_id):
         try:
@@ -26,7 +26,7 @@ class FollowUserView(generics.GenericAPIView):
 
 # Unfollow user
 class UnfollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Make sure this is applied
 
     def post(self, request, user_id):
         try:
